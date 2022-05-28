@@ -83,7 +83,7 @@ void sort_contributers(Node* list)
 	} while (swapped);
 }
 
-void write_contributer(Node** list)
+void write_contributer(Node* list)
 {
 	FILE* output_file;
 	if ((output_file = fopen(OUTPUT_FILE, "w")) == NULL)
@@ -92,7 +92,7 @@ void write_contributer(Node** list)
 		return;
 	}
 
-	Node* curNode = *list;
+	Node* curNode = list;
 
 	while (true)
 	{
@@ -148,13 +148,15 @@ void free_contributers(Node* list)
 	}
 }
 
-int read_file(Node** contributersList)
+Node* read_file()
 {
+	Node* contributersList = NULL;
+
 	FILE* input_file;
 	if ((input_file = fopen(INPUT_FILE, "r")) == NULL)
 	{
 		printf("DAT_GRESKA");
-		return -1;
+		return NULL;
 	}
 
 	char curEmail[MAX_LEN] = { 0 };
@@ -164,11 +166,11 @@ int read_file(Node** contributersList)
 	while (fscanf(input_file, "%s %d %s", curEmail, &curLines, curDate) != EOF)
 	{
 		Node* newNode = create_node(curEmail, curLines, curDate);
-		add_contributer(contributersList, newNode);
+		add_contributer(&contributersList, newNode);
 	}
 
 	fclose(input_file);
-	return 0;
+	return contributersList;
 }
 
 int is_number(const char* input_string)
@@ -289,11 +291,11 @@ int main()
 {
 	Node* contributersList = NULL;
 
-	if (read_file(&contributersList) < 0)
+	if ((contributersList = read_file(&contributersList)) == NULL)
 		return 0;
 
 	sort_contributers(contributersList);
-	write_contributer(&contributersList);
+	write_contributer(contributersList);
 	free_contributers(contributersList);
 
 	return 0;
